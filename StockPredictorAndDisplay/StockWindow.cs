@@ -14,6 +14,7 @@ namespace StockPredictorAndDisplay
 {
     public partial class StockWindow : Form
     {
+        private static List<string> yearLabels = new List<string>();
         public StockWindow()
         {
             InitializeComponent();
@@ -31,7 +32,7 @@ namespace StockPredictorAndDisplay
             displayChart.AxisX.Add(new Axis
             {
                 Title = "Date",
-                Labels = new List<string>() // Will be populated dynamically
+                Labels = yearLabels
             });
 
             displayChart.AxisY.Add(new Axis
@@ -58,6 +59,9 @@ namespace StockPredictorAndDisplay
 
             // Updates the X axis labels and updates separator property for spacing, also sets Y-axis range based on stock data
             setAxes(allDates, priceData);
+
+            // adds lines for each of the years
+            AddYearlyLines(allDates);
 
             // Add stock data series to the chart
             displayData(ticker, priceData);
@@ -159,10 +163,25 @@ namespace StockPredictorAndDisplay
         //updates chart with labels, separator, and range of the y axis
         private void setAxes(List<string> allDates, List<double> priceData)
         {
-            displayChart.AxisX[0].Labels = allDates;
+            // Only show labels for distinct years or another interval
+            var distinctYears = allDates
+                .Select(date => DateTime.Parse(date).Year)
+                .Distinct()
+                .ToList();
+
+            // Set labels to be one per year
+            yearLabels = distinctYears
+                .Select(year => year.ToString())
+                .ToList();
+
+            // Set the labels on the X-axis
+            displayChart.AxisX[0].Labels = yearLabels;
+
+            // Adjust separator and Y-axis range as before
             setXAxisSeparator();
             setYAxisRange(priceData);
         }
+
 
 
         public void createPredictionLineLegend()
@@ -179,6 +198,87 @@ namespace StockPredictorAndDisplay
 
             displayChart.Series.Add(predictionLineLegend);
         }
+
+        private void AddYearlyLines(List<string> allDates)
+        {
+            // Define the date format
+            string dateFormat = "yyyy-MM-dd";
+
+            // Ensure the Labels list is initialized with placeholders
+            if (yearLabels == null || yearLabels.Count == 0)
+            {
+                yearLabels = new List<string>(new string[allDates.Count]);
+            }
+
+            // Clear existing year labels
+            yearLabels.Clear();
+
+            // Initialize yearLabels with empty values (to ensure labels exist for all dates)
+            yearLabels.AddRange(Enumerable.Repeat<string>(string.Empty, allDates.Count));
+
+            // Extract unique years from the list of dates
+            var years = allDates
+                .Select(date =>
+                {
+                    if (DateTime.TryParseExact(date, dateFormat, System.Globalization.CultureInfo.InvariantCulture,
+                                               System.Globalization.DateTimeStyles.None, out DateTime parsedDate))
+                    {
+                        return parsedDate.Year;
+                    }
+                    else
+                    {
+                        return (int?)null; // Return null for invalid dates
+                    }
+                })
+                .Where(year => year.HasValue) // Exclude null values
+                .Select(year => year.Value) // Get the non-null year values
+                .Distinct()
+                .OrderBy(year => year)
+                .ToList();
+
+            // Loop over the unique years and add vertical lines
+            foreach (var year in years)
+            {
+                // Find the first index of the year in the list of dates
+                var firstDateOfYear = allDates.FindIndex(date =>
+                    DateTime.TryParseExact(date, dateFormat, System.Globalization.CultureInfo.InvariantCulture,
+                                           System.Globalization.DateTimeStyles.None, out DateTime parsedDate) &&
+                    parsedDate.Year == year);
+
+                if (firstDateOfYear != -1)
+                {
+                    // Add a vertical line at the start of each year
+                    var verticalLine = new LiveCharts.Wpf.AxisSection
+                    {
+                        Value = firstDateOfYear, // Position of the year on the X-axis
+                        Stroke = System.Windows.Media.Brushes.Gray, // Line color
+                        StrokeThickness = 1,
+                        StrokeDashArray = new System.Windows.Media.DoubleCollection { 2, 2 }, // Dashed line
+                        SectionWidth = 0 // Ensures it appears as a single line
+                    };
+
+                    displayChart.AxisX[0].Sections.Add(verticalLine);
+
+                    // Add the year as a label on the X-axis (only once per year)
+                    if (firstDateOfYear < yearLabels.Count)
+                    {
+                        yearLabels[firstDateOfYear] = year.ToString();
+                    }
+                }
+            }
+
+            // Remove excess labels (only keep one label per year)
+            yearLabels = yearLabels
+                .Select((label, index) => index % (allDates.Count / years.Count) == 0 ? label : string.Empty)
+                .ToList();
+
+            // Ensure the chart updates after modifying the labels
+            displayChart.Refresh();
+        }
+
+
+
+
     }
 
 }

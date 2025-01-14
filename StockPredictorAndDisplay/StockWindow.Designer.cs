@@ -33,9 +33,11 @@
             // 
             // displayChart
             // 
-            this.displayChart.Location = new System.Drawing.Point(65, 12);
+            this.displayChart.Font = new System.Drawing.Font("Roboto", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.displayChart.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.displayChart.Location = new System.Drawing.Point(3, 2);
             this.displayChart.Name = "displayChart";
-            this.displayChart.Size = new System.Drawing.Size(626, 370);
+            this.displayChart.Size = new System.Drawing.Size(776, 436);
             this.displayChart.TabIndex = 0;
             this.displayChart.Text = "cartesianChart1";
             // 
@@ -43,6 +45,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.displayChart);
             this.Name = "StockWindow";
