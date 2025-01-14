@@ -43,6 +43,8 @@ namespace StockPredictorAndDisplay
 
             displayChart.LegendLocation = LegendLocation.Right;
         }
+
+        
         public void PopulateChart(string ticker, int startYear, int endYear)
         {
             // Get a list of all dates in the range
@@ -95,6 +97,8 @@ namespace StockPredictorAndDisplay
                     StrokeDashArray = new System.Windows.Media.DoubleCollection { 4 }, // Dashed line
                     SectionWidth = 0 // Ensures it appears as a single line
                 };
+
+                createPredictionLineLegend();
 
                 displayChart.AxisX[0].Sections.Add(verticalLine);
             }
@@ -159,5 +163,22 @@ namespace StockPredictorAndDisplay
             setXAxisSeparator();
             setYAxisRange(priceData);
         }
+
+
+        public void createPredictionLineLegend()
+        {
+            var predictionLineLegend = new LineSeries
+            {
+                Title = "Where prediction starts",
+                Stroke = System.Windows.Media.Brushes.Red,
+                StrokeThickness = 2,
+                Values = new ChartValues<double> { double.NaN }, // No actual data
+                PointGeometry = null, // No points
+                StrokeDashArray = new System.Windows.Media.DoubleCollection { 4 } // Dashed line
+            };
+
+            displayChart.Series.Add(predictionLineLegend);
+        }
     }
+
 }
