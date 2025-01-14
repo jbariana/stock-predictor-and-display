@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35222.181
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockPredictorAndDisplay", "StockPredictorAndDisplay\StockPredictorAndDisplay.csproj", "{BDCB073A-6B57-4CB9-96D2-4CF61F6B03F1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BDCB073A-6B57-4CB9-96D2-4CF61F6B03F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDCB073A-6B57-4CB9-96D2-4CF61F6B03F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDCB073A-6B57-4CB9-96D2-4CF61F6B03F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDCB073A-6B57-4CB9-96D2-4CF61F6B03F1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {37276311-934C-4326-A8A8-873262438B73}
+	EndGlobalSection
+EndGlobal
