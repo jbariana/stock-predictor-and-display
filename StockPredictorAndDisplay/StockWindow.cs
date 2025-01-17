@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Windows.Documents.Serialization;
 using System.Windows.Forms;
-using System.Windows.Markup;
 using LiveCharts;
-using LiveCharts.WinForms;
-using LiveCharts.Defaults;
 using LiveCharts.Wpf;
 
 namespace StockPredictorAndDisplay
@@ -37,7 +32,7 @@ namespace StockPredictorAndDisplay
 
             displayChart.AxisY.Add(new Axis
             {
-                Title = "Price",
+                Title = "Average Price",
                 LabelFormatter = value => value.ToString("C") // Currency format
             });
 
@@ -57,6 +52,10 @@ namespace StockPredictorAndDisplay
             // Generate a list of prices corresponding to the specified dates from the stock data
             List<double> priceData = getPriceData(allDates, GetPriceDictionary(stockData));
 
+            //makes a prediction and updates the priceData list
+            Prediction prediction = new Prediction();
+            priceData = prediction.Predict(allDates, priceData, "2024-12-29");
+
             // Updates the X axis labels and updates separator property for spacing, also sets Y-axis range based on stock data
             setAxes(allDates, priceData);
 
@@ -73,15 +72,27 @@ namespace StockPredictorAndDisplay
             displayChart.Refresh();
         }
 
-        //change to change type of price taken from database
+
+        //returns a dictionary with the date and average prices for that date
         public Dictionary<string, double> GetPriceDictionary(List<StockModel> stockData)
         {
             return stockData
                 .ToDictionary(
                     s => DateTime.Parse(s.Date).ToString("yyyy-MM-dd"),
-                    s => double.TryParse(s.Close, out var close) ? close : double.NaN
+                    s =>
+                    {
+                        if (double.TryParse(s.High, out var high) &&
+                            double.TryParse(s.Low, out var low) &&
+                            double.TryParse(s.Open, out var open) &&
+                            double.TryParse(s.Close, out var close))
+                        {
+                            return (high + low + open + close) / 4.0; // Calculate average
+                        }
+                        return double.NaN; // Return NaN if any value is invalid
+                    }
                 );
         }
+
 
         //creates end of data line
         private void addEndOfDataLine(List<string> allDates)
@@ -108,6 +119,7 @@ namespace StockPredictorAndDisplay
             }
         }
 
+
         //finds all of the dates in the given range
         private List<string> allDatesFinder(int startYear, int endYear)
         {
@@ -118,6 +130,7 @@ namespace StockPredictorAndDisplay
                                       .ToList();
         }
 
+
         //gets all priceData in region
         private List<double> getPriceData(List<string> allDates, Dictionary<string, double> dateToPrice)
         {
@@ -125,6 +138,7 @@ namespace StockPredictorAndDisplay
                 .Select(date => dateToPrice.ContainsKey(date) ? dateToPrice[date] : double.NaN)
                 .ToList();
         }
+
 
         //updates chart
         private void displayData(string ticker, List<double> priceData)
@@ -141,6 +155,7 @@ namespace StockPredictorAndDisplay
             displayChart.Series.Add(lineSeries);
         }
 
+
         //sets the range for the y axis
         private void setYAxisRange(List<double> priceData)
         {
@@ -151,6 +166,7 @@ namespace StockPredictorAndDisplay
             displayChart.AxisY[0].MaxValue = maxPrice + (maxPrice - minPrice) * 0.1; // Add padding
         }
 
+
         //sets separator for x axis
         private void setXAxisSeparator()
         {
@@ -159,6 +175,7 @@ namespace StockPredictorAndDisplay
                 Step = 1 // Controls the spacing between axis labels
             };
         }
+
 
         //updates chart with labels, separator, and range of the y axis
         private void setAxes(List<string> allDates, List<double> priceData)
@@ -184,6 +201,7 @@ namespace StockPredictorAndDisplay
 
 
 
+        //adds a legend item for when the predicton starts
         public void createPredictionLineLegend()
         {
             var predictionLineLegend = new LineSeries
@@ -199,6 +217,8 @@ namespace StockPredictorAndDisplay
             displayChart.Series.Add(predictionLineLegend);
         }
 
+
+        //adds lines for each year and updates legend
         private void AddYearlyLines(List<string> allDates)
         {
             // Define the date format
@@ -275,10 +295,5 @@ namespace StockPredictorAndDisplay
             // Ensure the chart updates after modifying the labels
             displayChart.Refresh();
         }
-
-
-
-
     }
-
 }
