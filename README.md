@@ -57,7 +57,7 @@ Before running the application, ensure you have the following installed:
 2. Select a company ticker (e.g., "AAPL" for Apple).
 3. Choose a date range (e.g., 2020-2024).
 4. View the stock chart generated in real-time, with stock prices plotted on the graph.
-5. Optionally, use machine learning-based predictions to forecast future stock behavior.
+5. If selected range is beyond 2024, it will display machine learning-based predictions to forecast future stock behavior.
 
 ## Folder Structure
 
