@@ -199,8 +199,6 @@ namespace StockPredictorAndDisplay
             setYAxisRange(priceData);
         }
 
-
-
         //adds a legend item for when the predicton starts
         public void createPredictionLineLegend()
         {

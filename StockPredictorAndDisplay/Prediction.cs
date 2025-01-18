@@ -49,7 +49,8 @@ namespace StockPredictorAndDisplay
             // Add predicted values into the list
             foreach (var forecast in forecasts.Forecast)
             {
-                double random = (rand.NextDouble() * 50) - 25; //generates num between -25
+                double average = priceData.Max(); // gets average of list for computations
+                double random = ((rand.NextDouble() * (average*2)) - average)*.02; //generates a number -2%<=x>=+2%
                 predictedPrices.Add((double)forecast+(double)random);
             }
 
